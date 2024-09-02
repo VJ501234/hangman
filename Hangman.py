@@ -41,7 +41,17 @@ def writeUserKey(keycode, letter, position):
 def allTheLetters():
     return range(pygame.K_a, pygame.K_z + 1)
 
+def setWord(wordList):
+    word = wordList[random.randint(0, len(wordList))]
+    for i in range(len(word)):
+        correct_letters.append(word[i])
 
+def letterCheck(letter):
+    for i in range(len(correct_letters)):
+        if letter == correct_letters[i]:
+            write(letter, (i+4) * 100, 379, 36)
+
+setWord(words)
 
 while running:
     # poll for events
@@ -52,15 +62,17 @@ while running:
 
      #print("keys = ", keys)
 
-    i = 0
+
+    y = 0
     for keycode in allTheLetters():
         letter = chr(keycode)
-        writeUserKey(keycode, letter, (1200, 20 + (i*26) ))
-        i = i + 1
+        writeUserKey(keycode, letter, (1200, 20 + (y*26) ))
+        letterCheck(letter)
+        y = y + 1
     #writeUserKey(pygame.K_s, "S", (1200, 60))
 
     # Show the letter on the screen:
-    showSpaceForLetters(9, 720/2, 60)
+    showSpaceForLetters(len(correct_letters), 720/2, 60)
     showSpaceForLetters(6, 600, 40)
     write("Wrong Letters:", 620, 425, 36)
     

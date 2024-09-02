@@ -28,9 +28,11 @@ def write(word, xPosition, yPosition, fontSize):
     screen.blit(textsurface,(xPosition - textsurface.get_width() // 2, yPosition - textsurface.get_height() // 2))
     #pygame.Surface.blit(textsurface, screen, (xPosition...))
 
-words = ["Hangman", "input", "book"]
+words = ["hangman", "input", "book"]
 correct_letters = []
 wrong_letters = []
+correctWord = None
+lettersOnScreen = []
 
 def writeUserKey(keycode, letter, position):
     keys = pygame.key.get_pressed()
@@ -41,15 +43,85 @@ def writeUserKey(keycode, letter, position):
 def allTheLetters():
     return range(pygame.K_a, pygame.K_z + 1)
 
-def setWord(wordList):
-    word = wordList[random.randint(0, len(wordList))]
-    for i in range(len(word)):
-        correct_letters.append(word[i])
 
-def letterCheck(letter):
+def setWord(wordList):
+    global correctWord
+    correctWord = wordList[random.randint(0, len(wordList) - 1)]
+    for i in range(len(correctWord)):
+        correct_letters.append(correctWord[i])
+
+
+def letterCheck(keycode, letter):
+    isLetterCorrect = False
+    keys = pygame.key.get_pressed()
+    if keys[keycode]:
+        print("keycode = ", keycode)
+        for i in range(len(correct_letters)):
+            print("i=", i)
+            if letter == correct_letters[i]:
+                write(letter, (i+4.35) * 100, 341, 36)
+                isLetterCorrect = True
+                
+                #break
+        if isLetterCorrect:
+            #write(letter, (i+4.35) * 100, 341, 36)
+            print(letter, " is correct")
+
+            # if the letter is not in wrongletters, then add it.
+            if letter not in lettersOnScreen:
+                lettersOnScreen.append(letter)
+        else:
+            print(letter, " isn't correct")
+
+            # if the letter is not in wrongletters, then add it.
+            if letter not in wrong_letters:
+                wrong_letters.append(letter)
+            # then, write out all the wrong letters.
+                for i in range(len(wrong_letters)):
+                    write(wrong_letters[i], (i+4.2) * 100, 500, 24)
+            # for i in range(len(wrong_letters)):
+            #     print("inside the loop, Woohoo!!!!!")
+            #     if letter == wrong_letters[i]:
+            #         print(letter, " is in wrong letters")
+            #         break
+            #         print(letter, " is not in wrong letters")
+            #         write(letter, (wrongLetterCount+4.2) * 100, 581, 24)
+            #         wrongLetterCount = wrongLetterCount + 1
+            #         wrong_letters.append(letter)
+
+list1 = []
+list2 = []
+list3 = list1
+
+list1 == list2  # false
+list1 == list1 # true
+list1 == list3 # true
+
+list3.append("hello")
+
+print(list3) # ["hello"]
+print(list1) # ["hello"]
+
+def winCheck():
+    print(lettersOnScreen)
+    print(correct_letters)
+    lettersMatch = True
     for i in range(len(correct_letters)):
-        if letter == correct_letters[i]:
-            write(letter, (i+4) * 100, 379, 36)
+        if correct_letters[i] not in lettersOnScreen:
+            lettersMatch = False
+    if lettersMatch == True:
+        write("You Win", 640, 150, 50)
+
+
+def lossCheck():
+    if len(wrong_letters) >= 6:
+        write("You Lose", 640, 150, 50)
+
+
+def guy():
+    headArea = pygame.Rect(70, 70, 50, 50)
+    
+    pygame.draw.ellipse(screen, (0, 0, 0), headArea, 1)
 
 setWord(words)
 
@@ -61,22 +133,22 @@ while running:
             running = False
 
      #print("keys = ", keys)
+    guy()
 
-
+    # TODO can we call keys.getPressed only once in the main loop??
     y = 0
     for keycode in allTheLetters():
         letter = chr(keycode)
-        writeUserKey(keycode, letter, (1200, 20 + (y*26) ))
-        letterCheck(letter)
+        letterCheck(keycode, letter)
         y = y + 1
     #writeUserKey(pygame.K_s, "S", (1200, 60))
 
     # Show the letter on the screen:
     showSpaceForLetters(len(correct_letters), 720/2, 60)
-    showSpaceForLetters(6, 600, 40)
     write("Wrong Letters:", 620, 425, 36)
     
-    
+    lossCheck()
+    winCheck()
     
 
     # flip() the display to put your work on screen

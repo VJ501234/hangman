@@ -89,18 +89,7 @@ def letterCheck(keycode, letter):
             #         wrongLetterCount = wrongLetterCount + 1
             #         wrong_letters.append(letter)
 
-list1 = []
-list2 = []
-list3 = list1
 
-list1 == list2  # false
-list1 == list1 # true
-list1 == list3 # true
-
-list3.append("hello")
-
-print(list3) # ["hello"]
-print(list1) # ["hello"]
 
 def winCheck():
     print(lettersOnScreen)
@@ -111,18 +100,38 @@ def winCheck():
             lettersMatch = False
     if lettersMatch == True:
         write("You Win", 640, 150, 50)
+        guy(True, False)
+    else:
+        guy(False, False)
 
 
 def lossCheck():
     if len(wrong_letters) >= 6:
         write("You Lose", 640, 150, 50)
+        guy(False, False)
+    else:
+        guy(False, True)
 
 
-def guy():
-    headArea = pygame.Rect(70, 70, 50, 50)
-    
+
+def guy(win, lose):
+    headArea = pygame.Rect(100, 70, 160, 160)
+    eye1 = pygame.Rect(130, 110, 30, 30)
+    eye2 = pygame.Rect(200, 110, 30, 30)
     pygame.draw.ellipse(screen, (0, 0, 0), headArea, 1)
-
+    pygame.draw.ellipse(screen, (0, 0, 0), eye1, 1)
+    pygame.draw.ellipse(screen, (0, 0, 0), eye2, 1)
+    pygame.draw.line(screen, (0, 0, 0), (180, 230), (180, 500))
+    pygame.draw.line(screen, (0, 0, 0), (180, 500), (260, 650))
+    pygame.draw.line(screen, (0, 0, 0), (180, 500), (100, 650))
+    pygame.draw.line(screen, (0, 0, 0), (180, 350), (80, 270))
+    pygame.draw.line(screen, (0, 0, 0), (180, 350), (280, 270))
+    if win:
+        pass
+    elif lose:
+        pass
+    else:
+        pygame.draw.line(screen, (0, 0, 0), (150, 190), (210, 190))
 setWord(words)
 
 while running:
@@ -133,7 +142,7 @@ while running:
             running = False
 
      #print("keys = ", keys)
-    guy()
+    
 
     # TODO can we call keys.getPressed only once in the main loop??
     y = 0
@@ -146,6 +155,7 @@ while running:
     # Show the letter on the screen:
     showSpaceForLetters(len(correct_letters), 720/2, 60)
     write("Wrong Letters:", 620, 425, 36)
+    
     
     lossCheck()
     winCheck()

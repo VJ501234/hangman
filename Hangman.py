@@ -34,6 +34,7 @@ wrong_letters = []
 correctWord = None
 lettersOnScreen = []
 
+
 def writeUserKey(keycode, letter, position):
     keys = pygame.key.get_pressed()
     if keys[keycode]:
@@ -65,7 +66,7 @@ def letterCheck(keycode, letter):
                 #break
         if isLetterCorrect:
             #write(letter, (i+4.35) * 100, 341, 36)
-            print(letter, " is correct")
+            #print(letter, " is correct")
 
             # if the letter is not in wrongletters, then add it.
             if letter not in lettersOnScreen:
@@ -89,7 +90,9 @@ def letterCheck(keycode, letter):
             #         wrongLetterCount = wrongLetterCount + 1
             #         wrong_letters.append(letter)
 
-
+def lossCheck():
+    if len(wrong_letters) >= 6:
+        write(f"You Lose, the word was {correctWord}", 640, 150, 50)
 
 def winCheck():
     print(lettersOnScreen)
@@ -98,40 +101,47 @@ def winCheck():
     for i in range(len(correct_letters)):
         if correct_letters[i] not in lettersOnScreen:
             lettersMatch = False
+            lossCheck()
+            guy(len(wrong_letters))
     if lettersMatch == True:
         write("You Win", 640, 150, 50)
-        guy(True, False)
-    else:
-        guy(False, False)
-
-
-def lossCheck():
-    if len(wrong_letters) >= 6:
-        write("You Lose", 640, 150, 50)
-        guy(False, False)
-    else:
-        guy(False, True)
+    
+        
+   
 
 
 
-def guy(win, lose):
+def guy(numOfWrongLetters):
     headArea = pygame.Rect(100, 70, 160, 160)
     eye1 = pygame.Rect(130, 110, 30, 30)
     eye2 = pygame.Rect(200, 110, 30, 30)
     pygame.draw.ellipse(screen, (0, 0, 0), headArea, 1)
     pygame.draw.ellipse(screen, (0, 0, 0), eye1, 1)
     pygame.draw.ellipse(screen, (0, 0, 0), eye2, 1)
+    pygame.draw.line(screen, (0, 0, 0), (150, 190), (210, 190))
     pygame.draw.line(screen, (0, 0, 0), (180, 230), (180, 500))
     pygame.draw.line(screen, (0, 0, 0), (180, 500), (260, 650))
     pygame.draw.line(screen, (0, 0, 0), (180, 500), (100, 650))
     pygame.draw.line(screen, (0, 0, 0), (180, 350), (80, 270))
     pygame.draw.line(screen, (0, 0, 0), (180, 350), (280, 270))
-    if win:
-        pass
-    elif lose:
-        pass
-    else:
-        pygame.draw.line(screen, (0, 0, 0), (150, 190), (210, 190))
+    if numOfWrongLetters >= 1:
+        pygame.draw.line(screen, (255, 255, 255), (180, 500), (260, 650))
+    if numOfWrongLetters >= 2:
+        pygame.draw.line(screen, (255, 255, 255), (180, 500), (100, 650))
+    if numOfWrongLetters >= 3:
+        pygame.draw.line(screen, (255, 255, 255), (180, 350), (80, 270))
+    if numOfWrongLetters >= 4:
+        pygame.draw.line(screen, (255, 255, 255), (180, 350), (280, 270))
+    if numOfWrongLetters >= 5:
+        pygame.draw.line(screen, (255, 255, 255), (180, 230), (180, 500))
+
+    if numOfWrongLetters >= 6:
+        pygame.draw.line(screen, (255, 255, 255), (150, 190), (210, 190))
+        pygame.draw.ellipse(screen, (255, 255, 255), eye1, 1)
+        pygame.draw.ellipse(screen, (255, 255, 255), eye2, 1)
+    
+
+
 setWord(words)
 
 while running:
@@ -156,9 +166,9 @@ while running:
     showSpaceForLetters(len(correct_letters), 720/2, 60)
     write("Wrong Letters:", 620, 425, 36)
     
-    
-    lossCheck()
+
     winCheck()
+    
     
 
     # flip() the display to put your work on screen

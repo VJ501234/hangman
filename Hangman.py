@@ -90,9 +90,17 @@ def letterCheck(keycode, letter):
             #         wrongLetterCount = wrongLetterCount + 1
             #         wrong_letters.append(letter)
 
+def takeKeyInput():
+    y = 0
+    for keycode in allTheLetters():
+        letter = chr(keycode)
+        letterCheck(keycode, letter)
+        y = y + 1
+
 def lossCheck():
-    if len(wrong_letters) >= 6:
-        write(f"You Lose, the word was {correctWord}", 640, 150, 50)
+    return(len(wrong_letters) >= 6)
+        
+    
 
 def winCheck():
     print(lettersOnScreen)
@@ -101,12 +109,21 @@ def winCheck():
     for i in range(len(correct_letters)):
         if correct_letters[i] not in lettersOnScreen:
             lettersMatch = False
-            lossCheck()
-            guy(len(wrong_letters))
-    if lettersMatch == True:
+            
+    return(lettersMatch)
+
+def endGameCheck():
+    win = winCheck()
+    lose = lossCheck()
+    # what should the logic for winning and losing be?
+    if lose:
+        write(f"You Lose, the word was {correctWord}", 640, 150, 50)
+    if win:
         write("You Win", 640, 150, 50)
-    
-        
+    if not win and not lose:
+        takeKeyInput()
+        guy(len(wrong_letters))
+
    
 
 
@@ -155,11 +172,14 @@ while running:
     
 
     # TODO can we call keys.getPressed only once in the main loop??
-    y = 0
-    for keycode in allTheLetters():
-        letter = chr(keycode)
-        letterCheck(keycode, letter)
-        y = y + 1
+    
+    
+    """
+        if not win and not lose:
+            letterCheck:
+        
+        
+    """
     #writeUserKey(pygame.K_s, "S", (1200, 60))
 
     # Show the letter on the screen:
@@ -167,7 +187,7 @@ while running:
     write("Wrong Letters:", 620, 425, 36)
     
 
-    winCheck()
+    endGameCheck()
     
     
 

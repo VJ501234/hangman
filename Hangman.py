@@ -52,6 +52,57 @@ def setWord(wordList):
         correct_letters.append(correctWord[i])
 
 
+def makeButton(text, buttonParameters):
+    (xPos, yPos, width, height) = buttonParameters
+    pygame.draw.line(screen, (0, 0, 0), (xPos, yPos), (xPos + width, yPos))
+    pygame.draw.line(screen, (0, 0, 0), (xPos, yPos+height), (xPos + width, yPos+height))
+    pygame.draw.line(screen, (0, 0, 0), (xPos, yPos), (xPos, yPos+height))
+    pygame.draw.line(screen, (0, 0, 0), (xPos+width, yPos), (xPos+width, yPos+height))
+    write(text, xPos+width / 2, yPos + height / 2, height // 3)
+    
+def isMouseInBox(buttonParameters, mouse):
+    (xPos, yPos, width, height) = buttonParameters
+    # if its to the right of the left line..
+    # if its to the left of the right line..
+    #if its to under the top line..
+    #if its over the bottom line..
+    (mouseX, mouseY) = mouse
+    return(mouseX >= xPos and mouseX <= xPos + width and mouseY >= yPos and mouseY <= yPos + height)
+
+def playAgain():
+
+    write("Would you like to play again?", 640, 150, 40)
+
+    yesButtonParameters = (500, 200, 100, 70) #Rectangle!
+    noButtonParameters = (700, 200, 100, 70) # aka, pygame.Rect(x,y,width, height)
+
+    makeButton("Yes", yesButtonParameters)
+    makeButton("No", noButtonParameters)
+
+    mousePos = pygame.mouse.get_pos()
+    isMouseInYesBox = isMouseInBox(yesButtonParameters, mousePos)
+    isMouseInNoBox = isMouseInBox(noButtonParameters ,mousePos)
+    mouseButtonsPressed = pygame.mouse.get_pressed()
+    isMousePressed = mouseButtonsPressed[0]
+    if isMouseInYesBox and isMousePressed:
+        print("yes button pressed")
+    if isMouseInNoBox and isMousePressed:
+        print("no button pressed")
+
+    """
+
+    write would you like to play again
+    
+    drawBox("yes")
+    drawBox("no")
+
+    if mouse pos is in yes box area and mouse 1 is pressed
+        clear screen
+        reset the game state (curretn word, )
+    elif mouse pos is in no box area and mouse 1 is pressed
+        pygame.quit
+    """
+
 def letterCheck(keycode, letter):
     isLetterCorrect = False
     keys = pygame.key.get_pressed()
@@ -103,8 +154,8 @@ def lossCheck():
     
 
 def winCheck():
-    print(lettersOnScreen)
-    print(correct_letters)
+    #print(lettersOnScreen)
+    #print(correct_letters)
     lettersMatch = True
     for i in range(len(correct_letters)):
         if correct_letters[i] not in lettersOnScreen:
@@ -117,9 +168,11 @@ def endGameCheck():
     lose = lossCheck()
     # what should the logic for winning and losing be?
     if lose:
-        write(f"You Lose, the word was {correctWord}", 640, 150, 50)
+        write(f"You Lose, the word was {correctWord}", 640, 100, 50)
     if win:
-        write("You Win", 640, 150, 50)
+        write("You Win", 640, 100, 50)
+    if lose or win:
+        playAgain()
     if not win and not lose:
         takeKeyInput()
         guy(len(wrong_letters))
@@ -170,7 +223,8 @@ while running:
 
      #print("keys = ", keys)
     
-
+    
+    
     # TODO can we call keys.getPressed only once in the main loop??
     
     

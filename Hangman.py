@@ -1,57 +1,54 @@
-# Example file showing a circle moving on screen
+#Hangman
 import pygame
 import random
+import wordlist
+
+
 
 # pygame setup
 pygame.init()
+words = wordlist.words
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
-running = True
 dt = 0
 red = (200, 0, 0)
 green = (0, 200, 0)
 blue = (0, 0, 200)
+
+def getNineLetterWords(words):
+    return(words)
+
 
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
 screen.fill((255, 255, 255))
 
-
+#Creates space for letters
 def showSpaceForLetters(numOfLetters, height, size):
     for i in range(numOfLetters):
         pygame.draw.line(screen, (255, 0, 0), ((i+4) * 100, height), ((i+4) * 100 + size, height))
 
+#Writes words on the screen
 def write(word, xPosition, yPosition, fontSize):
     font = pygame.font.SysFont("Arial", fontSize)
     textsurface = font.render(word, True, blue)
     screen.blit(textsurface,(xPosition - textsurface.get_width() // 2, yPosition - textsurface.get_height() // 2))
-    #pygame.Surface.blit(textsurface, screen, (xPosition...))
+    
 
-words = ["hangman", "input", "book"]
-correct_letters = []
-wrong_letters = []
-correctWord = None
-lettersOnScreen = []
-
-
-def writeUserKey(keycode, letter, position):
-    keys = pygame.key.get_pressed()
-    if keys[keycode]:
-        write(letter, position[0], position[1], 24)
-
-
+#returns the keycode of a - z
 def allTheLetters():
     return range(pygame.K_a, pygame.K_z + 1)
 
-
-def setWord(wordList):
-    global correctWord
+#sets a Word
+def setWord(wordList, correctLetters):
+    
     correctWord = wordList[random.randint(0, len(wordList) - 1)]
     for i in range(len(correctWord)):
-        correct_letters.append(correctWord[i])
+        correctLetters.append(correctWord[i])
+    return(correctWord)
 
-
+#makes a button
 def makeButton(text, buttonParameters):
     (xPos, yPos, width, height) = buttonParameters
     pygame.draw.line(screen, (0, 0, 0), (xPos, yPos), (xPos + width, yPos))
@@ -60,6 +57,7 @@ def makeButton(text, buttonParameters):
     pygame.draw.line(screen, (0, 0, 0), (xPos+width, yPos), (xPos+width, yPos+height))
     write(text, xPos+width / 2, yPos + height / 2, height // 3)
     
+#checks if the is inside the box area
 def isMouseInBox(buttonParameters, mouse):
     (xPos, yPos, width, height) = buttonParameters
     # if its to the right of the left line..
@@ -69,6 +67,7 @@ def isMouseInBox(buttonParameters, mouse):
     (mouseX, mouseY) = mouse
     return(mouseX >= xPos and mouseX <= xPos + width and mouseY >= yPos and mouseY <= yPos + height)
 
+#Checks if you want or don't want to play again but doesn't do anything but print something
 def playAgain():
 
     write("Would you like to play again?", 640, 150, 40)
@@ -86,96 +85,84 @@ def playAgain():
     isMousePressed = mouseButtonsPressed[0]
     if isMouseInYesBox and isMousePressed:
         print("yes button pressed")
+        screen.fill((255,255,255))
+        return("Restart")
     if isMouseInNoBox and isMousePressed:
         print("no button pressed")
+        return("Stop")
+    else:
+        return("Continue")
 
-    """
-
-    write would you like to play again
+#check if key is pressed
+def isKeyPressed(keycode):
     
-    drawBox("yes")
-    drawBox("no")
-
-    if mouse pos is in yes box area and mouse 1 is pressed
-        clear screen
-        reset the game state (curretn word, )
-    elif mouse pos is in no box area and mouse 1 is pressed
-        pygame.quit
-    """
-
-def letterCheck(keycode, letter):
-    isLetterCorrect = False
     keys = pygame.key.get_pressed()
-    if keys[keycode]:
+    return(keys[keycode])
+
+#checks what key is pressed and 
+def letterCheck(keycode, letter, correctLetters, wrongLetters, lettersOnScreen):
+    isLetterCorrect = False
+   
+    if isKeyPressed(keycode):
         print("keycode = ", keycode)
-        for i in range(len(correct_letters)):
+        for i in range(len(correctLetters)):
             print("i=", i)
-            if letter == correct_letters[i]:
+            #if letter is in the word, write the letters where it goes in the word based on i
+            if letter == correctLetters[i]:
                 write(letter, (i+4.35) * 100, 341, 36)
                 isLetterCorrect = True
                 
-                #break
         if isLetterCorrect:
-            #write(letter, (i+4.35) * 100, 341, 36)
-            #print(letter, " is correct")
-
-            # if the letter is not in wrongletters, then add it.
+            # if the letter is not in the letters on screen variable,
+            # add it so we know what letters are on the screen.
             if letter not in lettersOnScreen:
                 lettersOnScreen.append(letter)
         else:
             print(letter, " isn't correct")
 
             # if the letter is not in wrongletters, then add it.
-            if letter not in wrong_letters:
-                wrong_letters.append(letter)
+            if letter not in wrongLetters:
+                wrongLetters.append(letter)
             # then, write out all the wrong letters.
-                for i in range(len(wrong_letters)):
-                    write(wrong_letters[i], (i+4.2) * 100, 500, 24)
-            # for i in range(len(wrong_letters)):
-            #     print("inside the loop, Woohoo!!!!!")
-            #     if letter == wrong_letters[i]:
-            #         print(letter, " is in wrong letters")
-            #         break
-            #         print(letter, " is not in wrong letters")
-            #         write(letter, (wrongLetterCount+4.2) * 100, 581, 24)
-            #         wrongLetterCount = wrongLetterCount + 1
-            #         wrong_letters.append(letter)
+                for i in range(len(wrongLetters)):
+                    write(wrongLetters[i], (i+4.2) * 100, 500, 24)
+        
 
-def takeKeyInput():
+def takeKeyInput(correctLetters, wrongLetters, lettersOnScreen):
     y = 0
     for keycode in allTheLetters():
         letter = chr(keycode)
-        letterCheck(keycode, letter)
+        letterCheck(keycode, letter, correctLetters, wrongLetters, lettersOnScreen)
         y = y + 1
 
-def lossCheck():
-    return(len(wrong_letters) >= 6)
+def lossCheck(numOfWrongLetters):
+    return(len(numOfWrongLetters) >= 6)
         
     
 
-def winCheck():
-    #print(lettersOnScreen)
-    #print(correct_letters)
+def winCheck(correctLetters, lettersOnScreen):
     lettersMatch = True
-    for i in range(len(correct_letters)):
-        if correct_letters[i] not in lettersOnScreen:
+    for i in range(len(correctLetters)):
+        if correctLetters[i] not in lettersOnScreen:
             lettersMatch = False
             
     return(lettersMatch)
 
-def endGameCheck():
-    win = winCheck()
-    lose = lossCheck()
+def endGameCheck(correctLetters, wrongLetters, lettersOnScreen, correctWord):
+    win = winCheck(correctLetters, lettersOnScreen)
+    lose = lossCheck(wrongLetters)
+    
     # what should the logic for winning and losing be?
     if lose:
         write(f"You Lose, the word was {correctWord}", 640, 100, 50)
     if win:
         write("You Win", 640, 100, 50)
     if lose or win:
-        playAgain()
+        return(playAgain())
     if not win and not lose:
-        takeKeyInput()
-        guy(len(wrong_letters))
+        takeKeyInput(correctLetters, wrongLetters, lettersOnScreen)
+        guy(len(wrongLetters))
+    return("continue")
 
    
 
@@ -211,46 +198,65 @@ def guy(numOfWrongLetters):
         pygame.draw.ellipse(screen, (255, 255, 255), eye2, 1)
     
 
+def game():
+    correctLetters = []
+    wrongLetters = []
+    correctWord = setWord(words, correctLetters)
+    lettersOnScreen = []
+    running = True
+    clickedNo = False
+    
+    showSpaceForLetters(len(correctLetters), 720/2, 60)
 
-setWord(words)
+    while running:
+        # poll for events
+        # pygame.QUIT event means the user clicked X to close your window
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                clickedNo = True
 
-while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+
+        #print("keys = ", keys)
+        #keys = pygame.key.get_pressed()
+      
+
+        # Show the letter on the screen:
+        
+        #Write wrong letters for where the wrong letters should go
+        write("Wrong Letters:", 620, 425, 36)
+        
+        #Checks if the game has ended
+        if endGameCheck(correctLetters, wrongLetters, lettersOnScreen, correctWord) == "Stop":
+            clickedNo = True
             running = False
-
-     #print("keys = ", keys)
-    
-    
-    
-    # TODO can we call keys.getPressed only once in the main loop??
-    
-    
-    """
-        if not win and not lose:
-            letterCheck:
+        if endGameCheck(correctLetters, wrongLetters, lettersOnScreen, correctWord) == "Continue":
+            running = True
+        if endGameCheck(correctLetters, wrongLetters, lettersOnScreen, correctWord) == "Restart":
+            running = False
+            clickedNo = False
+            
         
         
-    """
-    #writeUserKey(pygame.K_s, "S", (1200, 60))
 
-    # Show the letter on the screen:
-    showSpaceForLetters(len(correct_letters), 720/2, 60)
-    write("Wrong Letters:", 620, 425, 36)
-    
+        # flip() the display to put your work on screen
+        pygame.display.flip()
 
-    endGameCheck()
-    
-    
+        # limits FPS to 60
+        # dt is delta time in seconds since last frame, used for framerate-
+        # independent physics.
+        dt = clock.tick(60) / 1000
+        
+    return(clickedNo)
+    #pygame.quit()
 
-    # flip() the display to put your work on screen
-    pygame.display.flip()
 
-    # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
-    dt = clock.tick(60) / 1000
+def main():
+    userClickedNo=False
+    while not userClickedNo:
+        userClickedNo = game()
+    pygame.quit()
 
+
+main()
 pygame.quit()

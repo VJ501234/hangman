@@ -16,6 +16,7 @@ green = (0, 200, 0)
 blue = (0, 0, 200)
 
 def getNineLetterWords(words):
+    
     return(words)
 
 
@@ -44,6 +45,8 @@ def allTheLetters():
 def setWord(wordList, correctLetters):
     
     correctWord = wordList[random.randint(0, len(wordList) - 1)]
+    while len(correctWord) >= 10:
+        correctWord = wordList[random.randint(0, len(wordList) - 1)]
     for i in range(len(correctWord)):
         correctLetters.append(correctWord[i])
     return(correctWord)
@@ -205,7 +208,6 @@ def game():
     lettersOnScreen = []
     running = True
     clickedNo = False
-    
     showSpaceForLetters(len(correctLetters), 720/2, 60)
 
     while running:
@@ -213,8 +215,11 @@ def game():
         # pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                print("X button clicked")
                 running = False
                 clickedNo = True
+      
+                #the user pressed the X button
 
 
         #print("keys = ", keys)
@@ -227,26 +232,29 @@ def game():
         write("Wrong Letters:", 620, 425, 36)
         
         #Checks if the game has ended
-        if endGameCheck(correctLetters, wrongLetters, lettersOnScreen, correctWord) == "Stop":
-            clickedNo = True
-            running = False
-        if endGameCheck(correctLetters, wrongLetters, lettersOnScreen, correctWord) == "Continue":
-            running = True
-        if endGameCheck(correctLetters, wrongLetters, lettersOnScreen, correctWord) == "Restart":
-            running = False
-            clickedNo = False
+        
+        if running:
+
+            if endGameCheck(correctLetters, wrongLetters, lettersOnScreen, correctWord) == "Stop":
+                clickedNo = True
+                running = False
+            elif endGameCheck(correctLetters, wrongLetters, lettersOnScreen, correctWord) == "Restart":
+                running = False
+                clickedNo = False
+            elif endGameCheck(correctLetters, wrongLetters, lettersOnScreen, correctWord) == "Continue":
+                running = True
+                
             
-        
-        
+            
 
-        # flip() the display to put your work on screen
-        pygame.display.flip()
+            # flip() the display to put your work on screen
+            pygame.display.flip()
 
-        # limits FPS to 60
-        # dt is delta time in seconds since last frame, used for framerate-
-        # independent physics.
-        dt = clock.tick(60) / 1000
-        
+            # limits FPS to 60
+            # dt is delta time in seconds since last frame, used for framerate-
+            # independent physics.
+            dt = clock.tick(60) / 1000
+            
     return(clickedNo)
     #pygame.quit()
 
@@ -255,8 +263,11 @@ def main():
     userClickedNo=False
     while not userClickedNo:
         userClickedNo = game()
+        print("userClickedNo =", userClickedNo)
+        print("Game has ended")
     pygame.quit()
 
 
 main()
+print("Getting to the end of the program")
 pygame.quit()
